@@ -1,42 +1,20 @@
-import * as path from "node:path";
-import { defineConfig } from "@rspack/cli";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { rspack } from "@rspack/core";
-import * as RefreshPlugin from "@rspack/plugin-react-refresh";
-import { ModuleFederationPlugin } from "@module-federation/enhanced/rspack";
+import RefreshPlugin from "@rspack/plugin-react-refresh";
 import { withZephyr } from "zephyr-rspack-plugin";
 
-import { mfConfig } from "./module-federation.config";
-
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const isDev = process.env.NODE_ENV === "development";
-
-// Target browsers, see: https://github.com/browserslist/browserslist
-const targets = ["chrome >= 87", "edge >= 88", "firefox >= 78", "safari >= 14"];
 
 export default withZephyr()({
   context: __dirname,
   entry: {
-    main: "./src/index.ts",
+    main: "./src/main.jsx",
   },
   resolve: {
     extensions: ["...", ".ts", ".tsx", ".jsx"],
   },
-
-  devServer: {
-    port: 8081,
-    historyApiFallback: true,
-    watchFiles: [path.resolve(__dirname, "src")],
-  },
-  output: {
-    // You need to set a unique value that is not equal to other applications
-    uniqueName: "app_team",
-    // publicPath must be configured if using manifest
-    publicPath: "http://localhost:8081/",
-  },
-
-  experiments: {
-    css: true,
-  },
-
   module: {
     rules: [
       {
@@ -67,7 +45,14 @@ export default withZephyr()({
                   },
                 },
               },
-              env: { targets },
+              env: {
+                targets: [
+                  "chrome >= 87",
+                  "edge >= 88",
+                  "firefox >= 78",
+                  "safari >= 14",
+                ],
+              },
             },
           },
         ],
@@ -75,18 +60,29 @@ export default withZephyr()({
     ],
   },
   plugins: [
+    new rspack.container.ModuleFederationPlugin({
+      name: "app_team",
+      filename: "remoteEntry.js",
+      exposes: {
+        "./TeamView": "./src/pages/TeamView",
+        "./TeamEdit": "./src/components/TeamEdit",
+      },
+      shared: {
+        react: { eager: true },
+        "react-dom": { eager: true },
+        "react-router-dom": { eager: true },
+      },
+    }),
+    new rspack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+    }),
+    new rspack.ProgressPlugin({}),
     new rspack.HtmlRspackPlugin({
       template: "./index.html",
     }),
-    new ModuleFederationPlugin(mfConfig),
     isDev ? new RefreshPlugin() : null,
   ].filter(Boolean),
-  optimization: {
-    minimizer: [
-      new rspack.SwcJsMinimizerRspackPlugin(),
-      new rspack.LightningCssMinimizerRspackPlugin({
-        minimizerOptions: { targets },
-      }),
-    ],
+  experiments: {
+    css: true,
   },
 });
