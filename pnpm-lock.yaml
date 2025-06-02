@@ -2874,8 +2874,8 @@ packages:
       webpack-cli:
         optional: true
 
-  webpack-sources@3.3.0:
-    resolution: {integrity: sha512-77R0RDmJfj9dyv5p3bM5pOHa+X8/ZkO9c7kpDstigkC4nIDobadsfSGCwB4bKhMVxqAok8tajaoR8rirM7+VFQ==}
+  webpack-sources@3.3.2:
+    resolution: {integrity: sha512-ykKKus8lqlgXX/1WjudpIEjqsafjOTcOJqxnAbMLAu/KCsDCJ6GBtvscewvTkrn24HsnvFwrSCbenFrhtcCsAA==}
     engines: {node: '>=10.13.0'}
 
   webpack@5.99.9:
@@ -5921,7 +5921,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  webpack-sources@3.3.0: {}
+  webpack-sources@3.3.2: {}
 
   webpack@5.99.9(esbuild@0.17.19):
     dependencies:
@@ -5948,7 +5948,7 @@ snapshots:
       tapable: 2.2.2
       terser-webpack-plugin: 5.3.14(esbuild@0.17.19)(webpack@5.99.9(esbuild@0.17.19))
       watchpack: 2.4.4
-      webpack-sources: 3.3.0
+      webpack-sources: 3.3.2
     transitivePeerDependencies:
       - '@swc/core'
       - esbuild
